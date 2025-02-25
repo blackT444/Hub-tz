@@ -3,7 +3,7 @@ local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "PlayerESP"
 ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
--- Slide transparente com a opção "ON/OFF"
+-- Frame transparente com a opção "ON/OFF"
 local Frame = Instance.new("Frame")
 Frame.Size = UDim2.new(0.2, 0, 0.1, 0)
 Frame.Position = UDim2.new(0.4, 0, 0.85, 0)
@@ -16,7 +16,7 @@ ToggleButton.Size = UDim2.new(1, 0, 1, 0)
 ToggleButton.Position = UDim2.new(0, 0, 0, 0)
 ToggleButton.BackgroundTransparency = 1
 ToggleButton.TextScaled = true
-ToggleButton.Text = "ON/OFF"
+ToggleButton.Text = "ON"
 ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 ToggleButton.Parent = Frame
 
@@ -50,15 +50,15 @@ local function createESP(player, color)
         nameLabel.TextScaled = true
         nameLabel.Font = Enum.Font.SourceSansBold -- Tornar o texto grande e em negrito
 
+        billboardGui.Parent = player.Character:FindFirstChild("Head")
+
         -- Aplicar transparência para ver o avatar do jogador através das paredes
         for _, part in pairs(player.Character:GetChildren()) do
-            if part:IsA("BasePart") então
+            if part:IsA("BasePart") then
                 part.Transparency = 0.5 -- Ajuste a transparência conforme necessário
                 part.CanCollide = false -- Opcional: Permitir atravessar o jogador
             end
         end
-
-        billboardGui.Parent = player.Character:FindFirstChild("Head")
     end
 end
 
@@ -66,7 +66,7 @@ end
 local function addESPToPlayers()
     local colorIndex = 1
     for _, player in pairs(game.Players:GetPlayers()) do
-        if player ~= game.Players.LocalPlayer então
+        if player ~= game.Players.LocalPlayer then
             createESP(player, nameColors[colorIndex])
             colorIndex = (colorIndex % #nameColors) + 1
         end
@@ -75,13 +75,11 @@ end
 
 -- Conectar a função ao evento de jogadores adicionados
 game.Players.PlayerAdded:Connect(function(player)
-    if player ~= game.Players.LocalPlayer então
-        player.CharacterAdded:Connect(function(character)
-            wait(1) -- Aguardar o personagem carregar completamente
-            local colorIndex = (math.random(1, #nameColors))
-            createESP(player, nameColors[colorIndex])
-        end)
-    end
+    player.CharacterAdded:Connect(function(character)
+        wait(1) -- Aguardar o personagem carregar completamente
+        local colorIndex = math.random(1, #nameColors)
+        createESP(player, nameColors[colorIndex])
+    end)
 end)
 
 -- Adicionar ESP aos jogadores já presentes
@@ -94,16 +92,18 @@ local showESP = true
 local function toggleESP()
     showESP = not showESP
     for _, player in pairs(game.Players:GetPlayers()) do
-        if player ~= game.Players.LocalPlayer então
+        if player ~= game.Players.LocalPlayer then
             local character = player.Character
-            for _, part in pairs(character:GetChildren()) do
-                if part:IsA("BasePart") então
-                    part.Transparency = showESP and 0.5 or 0
+            if character then
+                for _, part in pairs(character:GetChildren()) do
+                    if part:IsA("BasePart") then
+                        part.Transparency = showESP and 0.5 or 0
+                    end
                 end
-            end
-            local esp = character:FindFirstChild("Head"):FindFirstChild("ESP")
-            if esp então
-                esp.Enabled = showESP
+                local esp = character:FindFirstChild("Head"):FindFirstChild("ESP")
+                if esp then
+                    esp.Enabled = showESP
+                end
             end
         end
     end
